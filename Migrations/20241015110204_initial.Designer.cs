@@ -12,8 +12,8 @@ using ToDoApp.Models;
 namespace ToDoApp.Migrations
 {
     [DbContext(typeof(ToDoContext))]
-    [Migration("20240924180057_install")]
-    partial class install
+    [Migration("20241015110204_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
