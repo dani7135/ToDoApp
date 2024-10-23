@@ -26,7 +26,7 @@ namespace ToDoApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "StatusSet",
+                name: "Statuses",
                 columns: table => new
                 {
                     StatusId = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -34,14 +34,15 @@ namespace ToDoApp.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StatusSet", x => x.StatusId);
+                    table.PrimaryKey("PK_Statuses", x => x.StatusId);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ToDoSet",
+                name: "ToDos",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CategoryId = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -49,17 +50,17 @@ namespace ToDoApp.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ToDoSet", x => x.Id);
+                    table.PrimaryKey("PK_ToDos", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ToDoSet_Categories_CategoryId",
+                        name: "FK_ToDos_Categories_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Categories",
                         principalColumn: "CategoryId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ToDoSet_StatusSet_StatusId",
+                        name: "FK_ToDos_Statuses_StatusId",
                         column: x => x.StatusId,
-                        principalTable: "StatusSet",
+                        principalTable: "Statuses",
                         principalColumn: "StatusId",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -69,13 +70,16 @@ namespace ToDoApp.Migrations
                 columns: new[] { "CategoryId", "Name" },
                 values: new object[,]
                 {
+                    { "call", "Contact" },
+                    { "ex", "Exercise" },
                     { "hobby", "Hobby" },
                     { "home", "Home" },
+                    { "shop", "Shopping" },
                     { "work", "Work" }
                 });
 
             migrationBuilder.InsertData(
-                table: "StatusSet",
+                table: "Statuses",
                 columns: new[] { "StatusId", "Name" },
                 values: new object[,]
                 {
@@ -84,13 +88,13 @@ namespace ToDoApp.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ToDoSet_CategoryId",
-                table: "ToDoSet",
+                name: "IX_ToDos_CategoryId",
+                table: "ToDos",
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ToDoSet_StatusId",
-                table: "ToDoSet",
+                name: "IX_ToDos_StatusId",
+                table: "ToDos",
                 column: "StatusId");
         }
 
@@ -98,13 +102,13 @@ namespace ToDoApp.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ToDoSet");
+                name: "ToDos");
 
             migrationBuilder.DropTable(
                 name: "Categories");
 
             migrationBuilder.DropTable(
-                name: "StatusSet");
+                name: "Statuses");
         }
     }
 }

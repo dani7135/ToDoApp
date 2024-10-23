@@ -12,7 +12,7 @@ using ToDoApp.Models;
 namespace ToDoApp.Migrations
 {
     [DbContext(typeof(ToDoContext))]
-    [Migration("20241015110204_initial")]
+    [Migration("20241022114234_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace ToDoApp.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -53,6 +53,21 @@ namespace ToDoApp.Migrations
                         {
                             CategoryId = "hobby",
                             Name = "Hobby"
+                        },
+                        new
+                        {
+                            CategoryId = "ex",
+                            Name = "Exercise"
+                        },
+                        new
+                        {
+                            CategoryId = "shop",
+                            Name = "Shopping"
+                        },
+                        new
+                        {
+                            CategoryId = "call",
+                            Name = "Contact"
                         });
                 });
 
@@ -67,7 +82,7 @@ namespace ToDoApp.Migrations
 
                     b.HasKey("StatusId");
 
-                    b.ToTable("StatusSet");
+                    b.ToTable("Statuses");
 
                     b.HasData(
                         new
@@ -84,8 +99,11 @@ namespace ToDoApp.Migrations
 
             modelBuilder.Entity("ToDoApp.Models.ToDo", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CategoryId")
                         .IsRequired()
@@ -95,7 +113,8 @@ namespace ToDoApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DueDate")
+                    b.Property<DateTime?>("DueDate")
+                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.Property<string>("StatusId")
@@ -108,7 +127,7 @@ namespace ToDoApp.Migrations
 
                     b.HasIndex("StatusId");
 
-                    b.ToTable("ToDoSet");
+                    b.ToTable("ToDos");
                 });
 
             modelBuilder.Entity("ToDoApp.Models.ToDo", b =>

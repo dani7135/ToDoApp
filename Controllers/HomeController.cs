@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using ToDoApp.Models;
@@ -16,9 +17,16 @@ namespace ToDoApp.Controllers //Del klassen op, så det her er startsiden og den 
             var filters = new Filters(id);
             ViewBag.Filters = filters;
             ViewBag.Categories = context.Categories.ToList();
-            ViewBag.Statuses = context.StatusSet.ToList();
-            ViewBag.DueFilterValues = Filters.DueFilterValues;
-            IQueryable<ToDo> query = context.ToDoSet
+            ViewBag.Statuses = context.Statuses.ToList();
+    
+ViewBag.DueFilters = new List<SelectListItem>
+{
+    new SelectListItem { Value = "past", Text = "Past Due" },
+    new SelectListItem { Value = "today", Text = "Due Today" },
+    new SelectListItem { Value = "future", Text = "Future Due" }
+};
+      
+     IQueryable<ToDo> query = context.ToDos
                 .Include(t => t.Category)
                 .Include(t => t.Status);
 
@@ -40,30 +48,35 @@ namespace ToDoApp.Controllers //Del klassen op, så det her er startsiden og den 
             return View(tasks);
         }
 
+
         [HttpGet]
         public IActionResult Add()
         {
             ViewBag.Categories = context.Categories.ToList();
-            ViewBag.Statuses = context.StatusSet.ToList();
+            ViewBag.Statuses = context.Statuses.ToList();
+
             var task = new ToDo { StatusId = "open" };
+
             return View(task);
         }
         [HttpPost]
         public IActionResult Add(ToDo task)
         {
+         
             if (ModelState.IsValid)
             {
-                context.ToDoSet.Add(task);
+                context.ToDos.Add(task);
                 context.SaveChanges();
                 return RedirectToAction("Index");
             }
             else
             {
                 ViewBag.Categories = context.Categories.ToList();
-                ViewBag.Statuses = context.StatusSet.ToList();
+                ViewBag.Statuses = context.Statuses.ToList();
                 return View(task);
             }
         }
+
         [HttpPost]
         public IActionResult Filter(string[] filter)
         {
@@ -72,23 +85,23 @@ namespace ToDoApp.Controllers //Del klassen op, så det her er startsiden og den 
         }
 
         [HttpPost]
-        public IActionResult MarkComplete([FromRoute]string id, ToDo selected)
+        public IActionResult MarkComplete([FromRoute] string id, ToDo selected)
         {
-            selected = context.ToDoSet.Find(selected.Id);
+            selected = context.ToDos.Find(selected.Id)!;
             if (selected != null)
             {
-                { selected.StatusId = "closed"; }
+                { selected.StatusId = "done"; }
                 context.SaveChanges();
             }
             return RedirectToAction("Index", new { ID = id });
         }
         [HttpPost]
-        public  IActionResult DeleteComplete(string id)
+        public IActionResult DeleteComplete(string id)
         {
-            var toDelete = context.ToDoSet.Where(t => t.StatusId == "closed");
+            var toDelete = context.ToDos.Where(t => t.StatusId == "done");
             foreach (var task in toDelete)
             {
-                context.ToDoSet.Remove(task);
+                context.ToDos.Remove(task);
             }
             context.SaveChanges();
             return RedirectToAction("Index", new { ID = id });

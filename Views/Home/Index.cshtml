@@ -1,23 +1,76 @@
 ﻿@model IEnumerable<ToDo>
-<div class="row"><!--Ændre det til text string, frem for hardcode, ændre så det er på flere sprog, tilføje et js framework ovenpå-->
-<div class="col-md-2">
-    <form asp-action="Filter" method="post">
-        <div class="mb-3">
-        <label class="form-label">Category</label>
-        <select name="filter" class="form-select"
-        asp-items="@(new SelectList(ViewBag.Categories, "CategoryId", "Name", ViewBag.Filters.CategoryId ))">
+<div class="row">
+    <!--Ændre det til text string, frem for hardcode, ændre så det er på flere sprog, tilføje et js framework ovenpå-->
+    <div class="col-md-2">
+        <form asp-action="Filter" method="post">
+            <div class="mb-3">
+                <label class="form-label">Category</label>
+                <select name="filter" class="form-select"
+                        asp-items="@(new SelectList(ViewBag.Categories, "CategoryId", "Name", ViewBag.Filters?.CategoryId  ?? "all"))">
 
-    <option value="all">All</option>
-    </select></div>
-    
-    </form>
-
-</div>
-
-<div class="col-md-10">
-
-</div>
-    
+                    <option value="all">All</option>
+                </select>
+            </div>
 
 
+            <div class="m-2">
+                <label class="form-label">Due:</label>
+                <select name="filter" class="form-select"
+                        asp-items="@(new SelectList(ViewBag.DueFilters, "Value", "Text", ViewBag.Filters?.Due))">
+                    <option value="all">All</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Status:</label>
+                <select name="filter" class="form-select"
+                        asp-items="@(new SelectList(ViewBag.Statuses, "StatusId", "Name", ViewBag.Filters?.StatusId))">
+                    
+                    <option value="all">All</option>
+                </select>
+
+            </div>
+            <button type="submit" class="btn btn-primary">Filter</button>
+            <a asp-action="Index" asp-route-id="" class="btn btn-primary">Clear</a>
+        </form>
+
+    </div>
+
+    <div class="col-md-10">
+        <form asp-action="MarkComplete" method="post" asp-route-id="ViewBag.Filters.FilterString">
+            <table class="table table-borderd table-striped mt-2">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>Due</th>
+                    <th>Status</th>
+                    <th class="w-25"></th>
+                </tr>
+                </thead>
+                <tbody>
+                    @foreach (ToDo task in Model)
+                    {
+                        string overdue = task.Overdue ? "bg-warning" : "";
+
+                        <tr>
+                            <td>@task.Description</td>
+                            <td>@task.Category?.Name</td>
+                            <td class="@overdue">@task.DueDate?.ToShortDateString()</td>
+                            <td>@task.Status?.Name</td>
+                            <td>
+                                @if(task.StatusId =="open")
+                                {
+                                    <button type="submit" class="btn btn-primary btn-sm"
+                                    name="@nameof(ToDo.Id)" value="@task.Id">Mark Complete</button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+        </form>
+        <form asp-action="DeleteComplete" method="post" asp-route-id="ViewBag.Filters.FilterString">
+            <a asp-action="Add" class="btn btn-primary">Add Task</a>
+            <button type="submit" class="btn btn-primary">Delete Completed</button>
+        </form>
+    </div>
 </div>
